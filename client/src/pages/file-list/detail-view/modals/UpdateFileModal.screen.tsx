@@ -71,8 +71,7 @@ const UpdateFileModalScreen = (props: UpdateFileModalScreenProps) => {
                     sx={{
                         marginTop: "1rem",
                         color: "#000",
-                        fontSize: "16px",
-                        fontFamily: "SamsungOne400"
+                        fontSize: "16px"
                     }}
                 >
                     {`Please confirm you would like to save ${filename}.`}

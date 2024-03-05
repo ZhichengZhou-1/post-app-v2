@@ -53,8 +53,7 @@ const ConfirmExitModal = ({
             </p>
             <p
                 style={{
-                    marginTop: "2rem",
-                    fontFamily: "SamsungOne700"
+                    marginTop: "2rem"
                 }}
             >
                 {`Select 'CONFIRM' to exit edit mode`}
