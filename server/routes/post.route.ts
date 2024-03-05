@@ -3,7 +3,8 @@ import {
     PostDeleteItemQuery,
     PostGetItemQuery,
     PostGetItemResponse,
-    PostGetListResponse
+    PostGetListResponse,
+    PostUpdateItemBody
 } from "../interface/post.interface";
 import { ResponseData, SuccessResponse } from "../utils/response.util";
 import {
@@ -84,6 +85,21 @@ class Blog {
         Log.info(TAG, "---", req.query.primaryKey);
 
         await PostService.deleteItem(req.query.primaryKey);
+        res.send(SuccessResponse());
+    }
+
+    /**
+     * update a single post
+     */
+    @Post("/update")
+    async updateSinglePost(
+        req: Request<{}, {}, PostUpdateItemBody, {}>,
+        res: Response
+    ): Promise<void> {
+        const TAG = "POST_UPDATE_ITEM";
+        Log.info(TAG, "---", req.body.primaryKey);
+
+        await PostService.updateItem(req.body.primaryKey, req.body.attributes);
         res.send(SuccessResponse());
     }
 }

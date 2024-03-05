@@ -1,11 +1,12 @@
 import { Row, createColumnHelper } from "@tanstack/react-table";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useClientTable } from "../../../hooks/useTable";
 import Table from "../../../components/Table/Table";
 import { useState } from "react";
 import Search from "../../../components/Search";
 import TableModal from "../../../components/Table/TableModal";
 import Button from "../../../components/Button";
+import dayjs from "dayjs";
 
 export interface FileListTableProps {
     data: TableRow[];
@@ -20,8 +21,10 @@ export interface FileListTableProps {
 export interface TableRow {
     postId: string;
     author: string;
+    authorEmail: string;
     title: string;
     content?: string;
+    lastModified?: string;
 }
 
 const columnHelper = createColumnHelper<TableRow>();
@@ -39,11 +42,7 @@ const FileListTable = ({ data, isLoading, handlers }: FileListTableProps) => {
             enableSorting: true,
             enableColumnFilter: false,
             cell: ({ cell }) => {
-                return (
-                    <>
-                        <Link to={"#"}>{cell.row.original.postId}</Link>
-                    </>
-                );
+                return <>{cell.row.original.postId}</>;
             }
         }),
         columnHelper.accessor("title", {
@@ -54,20 +53,31 @@ const FileListTable = ({ data, isLoading, handlers }: FileListTableProps) => {
                 return cell.row.original.title;
             }
         }),
-        columnHelper.accessor("content", {
-            header: "Content",
-            enableSorting: false,
-            enableColumnFilter: false,
-            cell: ({ cell }) => {
-                return cell.row.original.content;
-            }
-        }),
         columnHelper.accessor("author", {
             header: "Author",
             enableSorting: false,
             enableColumnFilter: false,
             cell: ({ cell }) => {
                 return cell.row.original.author;
+            }
+        }),
+        columnHelper.accessor("authorEmail", {
+            header: "Email",
+            enableSorting: true,
+            enableColumnFilter: false,
+            cell: ({ cell }) => {
+                return cell.row.original.authorEmail;
+            }
+        }),
+        columnHelper.accessor("lastModified", {
+            header: "Last Updated",
+            enableSorting: true,
+            enableColumnFilter: false,
+            cell: ({ cell }) => {
+                console.log("last modified: ", cell.row.original.lastModified);
+                return dayjs(cell.row.original.lastModified).format(
+                    "MMMM DD, YYYY [at] HH:mm:ss"
+                );
             }
         }),
         columnHelper.display({
@@ -156,6 +166,7 @@ const FileListTable = ({ data, isLoading, handlers }: FileListTableProps) => {
                     table={table}
                     loading={isLoading}
                     onRowClick={(row) => {
+                        console.log("post id is: ", row.original.postId);
                         navigate(`/admin/file/detail/${row.original.postId}`);
                     }}
                 />

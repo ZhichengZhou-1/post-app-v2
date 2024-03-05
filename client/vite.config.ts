@@ -14,10 +14,10 @@ export default defineConfig({
     ],
     server: {
         proxy: {
-            "/api": "http://localhost:9099",
-            "/login": "http://localhost:9099",
-            "/logout": "http://localhost:9099",
-            "/fakelogin": "http://localhost:9099"
+            "/api": "http://localhost:9098",
+            "/login": "http://localhost:9098",
+            "/logout": "http://localhost:9098",
+            "/fakelogin": "http://localhost:9098"
         }
     },
     build: {

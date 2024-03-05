@@ -9,6 +9,7 @@ import {
 import useUserProfile from "./hooks/useUserProfile";
 import LoginRoute from "./pages/login/Login.route";
 import FileListRoute from "./pages/file-list/list-view/FileList.route";
+import FileDetailRoute from "./pages/file-list/detail-view/FileDetail.route";
 
 function RequireAuth({
     navigateAfterAuth,
@@ -63,8 +64,12 @@ function App() {
                         }
                     />
                     <Route
-                        path={"file/detail/:fileId/*"}
-                        element={<div>hi</div>}
+                        path={"file/detail/:id"}
+                        element={
+                            <RequireAuth>
+                                <FileDetailRoute />
+                            </RequireAuth>
+                        }
                     />
                 </Route>
             </Route>

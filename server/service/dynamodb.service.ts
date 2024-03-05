@@ -7,10 +7,12 @@ import {
 import { DynamoDB } from "aws-sdk";
 import {
     CreateItemReturnType,
-    DeleteItemReturnType
+    DeleteItemReturnType,
+    UpdateItemAttributes,
+    UpdateItemReturnType
 } from "../interface/dynamodb.interface";
 import * as Log from "../utils/log.util";
-import { AttributeMap } from "aws-sdk/clients/dynamodb";
+import { AttributeMap, Converter } from "aws-sdk/clients/dynamodb";
 
 export interface FileUploadData {
     filename: string;
@@ -25,7 +27,9 @@ export interface ItemInterface {
     postId: string;
     author: string;
     title: string;
+    authorEmail: string;
     content?: string;
+    lastModified?: string;
 }
 export interface DynamoDBQueryParams {
     keyConditionExpression: string;
@@ -45,12 +49,11 @@ export interface DynamoDBManager {
     // Scan operation
     getList: () => Promise<ItemInterface[]>;
 
-    // // Update operation
-    // updateItem: (
-    //     primaryKey: string,
-    //     sortKey: string,
-    //     updatedAttributes: Partial<DynamoDBItem>
-    // ) => Promise<void>;
+    // Update operation
+    updateItem: (
+        primaryKey: string,
+        updatedAttributes: UpdateItemAttributes
+    ) => Promise<UpdateItemReturnType>;
 
     // Delete operation
     deleteItem: (
@@ -93,6 +96,67 @@ class DynamoFileManager implements DynamoDBManager {
             };
         } catch (err) {
             Log.error("DynamoDB createItem error: ", err);
+
+            if (err instanceof DynamoDBServiceException) {
+                throw new Error(
+                    JSON.stringify({
+                        StatusCode: err.$metadata.httpStatusCode,
+                        StatusMsg: err.name,
+                        Data: err.message
+                    })
+                );
+            } else {
+                throw new Error("Unknown Error");
+            }
+        }
+    }
+
+    async updateItem(
+        primaryKey: string,
+        updatedAttributes: UpdateItemAttributes
+    ): Promise<UpdateItemReturnType> {
+        const TAG = "DYNAMODB_UPDATE_ITEM";
+        const key: Record<string, AttributeValue> = {
+            postId: { S: primaryKey }
+        };
+        Log.info(TAG, "----", primaryKey, updatedAttributes);
+        try {
+            /**
+             * DynamoDB does not allow empty object as the attribute value, so conditionally including the clause in the value string
+             */
+            const expressionAttributeValues = {
+                ":newContent": { S: updatedAttributes.content },
+                ...(Object.keys(updatedAttributes.attributes ?? {}).length > 0
+                    ? {
+                          ":newAttributes": Converter.marshall(
+                              updatedAttributes.attributes ?? {}
+                          )
+                      }
+                    : {})
+            };
+            /**
+             * If the value is not present in the value string, then it also needs to be removed from the expression string
+             */
+            let updateExpression = `SET content = :newContent${
+                Object.keys(updatedAttributes.attributes ?? {}).length > 0
+                    ? ", attributes = :newAttributes"
+                    : ""
+            }`;
+
+            Log.info("expression: ", expressionAttributeValues);
+            const result = await this.dynamoDBClient
+                .updateItem({
+                    TableName: this.tableName,
+                    Key: key,
+                    UpdateExpression: updateExpression,
+                    ExpressionAttributeValues: expressionAttributeValues
+                })
+                .promise();
+            return {
+                status: result.$response.httpResponse.statusCode
+            };
+        } catch (err) {
+            Log.error("DynamoDB updateItem error: ", err);
 
             if (err instanceof DynamoDBServiceException) {
                 throw new Error(
@@ -196,7 +260,9 @@ class DynamoFileManager implements DynamoDBManager {
                         postId: item.postId.S ?? "",
                         author: item.author.S ?? "",
                         title: item.title.S ?? "",
-                        content: item.content.S ?? ""
+                        content: item.content.S ?? "",
+                        lastModified: item.lastModified.S ?? "",
+                        authorEmail: item.authorEmail.S ?? ""
                     };
                 }) || [];
             return items;

@@ -5,8 +5,7 @@ import {
 } from "../interface/post.interface";
 import DynamoFileManager, { DynamoDBItem } from "./dynamodb.service";
 import * as Log from "../utils/log.util";
-import { AttributeMap } from "aws-sdk/clients/dynamodb";
-import { DeleteItemReturnType } from "../interface/dynamodb.interface";
+import { UpdateItemAttributes } from "../interface/dynamodb.interface";
 
 const dynamodb = new DynamoFileManager(
     CONFIG.DYNAMODB_REGION,
@@ -18,7 +17,7 @@ class PostService {
         const TAG = "OBJECT_SERVICE_GET_ITEM";
         Log.info(TAG, " Getting item from dynamoDB");
         const item = await dynamodb.getItem(id);
-
+        Log.info("item is: ", item);
         if (!item) {
             throw new Error(
                 JSON.stringify({
@@ -29,7 +28,8 @@ class PostService {
         }
         return {
             postId: item.postId.S,
-            content: item.content.S
+            content: item.content.S,
+            filename: item.title.S
         };
     }
 
@@ -61,6 +61,15 @@ class PostService {
         const TAG = "OBJECT_SERVICE_DELETE_ITEM";
         Log.info(TAG, ` Deleting file id ${id}`);
         await dynamodb.deleteItem(id);
+    }
+
+    async updateItem(
+        id: string,
+        attributes: UpdateItemAttributes
+    ): Promise<void> {
+        const TAG = "OBJECT_SERVICE_UPDATE_ITEM";
+        Log.info(TAG, " Update an item");
+        await dynamodb.updateItem(id, attributes);
     }
 }
 

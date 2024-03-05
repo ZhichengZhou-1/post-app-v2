@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import useFileList from "../../../hooks/useFileList";
 import FileListScreen from "./FileList.screen";
 import FileListTable from "./FileListTable";
-import AddFileModal from "../modals/AddFileModal";
+import AddFileModal from "./modals/AddFileModal";
 import useUserProfile from "../../../hooks/useUserProfile";
 import { useState } from "react";
-import DeleteFileModal from "../modals/DeleteFileModal";
+import DeleteFileModal from "./modals/DeleteFileModal";
 
 const FileListRoute = () => {
     const navigate = useNavigate();

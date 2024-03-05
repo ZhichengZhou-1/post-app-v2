@@ -23,3 +23,14 @@ export type DeleteItemReturnType = z.infer<typeof DeleteItemReturnSchema>;
 export const GetItemReturnSchema = CreateItemReturnSchema.extend({});
 
 export type GetItemReturnType = z.infer<typeof GetItemReturnSchema>;
+
+/**
+ * paramter type of updateItem
+ */
+export interface UpdateItemAttributes {
+    content?: string;
+    attributes?: Record<string, unknown>;
+}
+
+export const UpdateItemReturnSchema = CreateItemReturnSchema;
+export type UpdateItemReturnType = z.infer<typeof UpdateItemReturnSchema>;

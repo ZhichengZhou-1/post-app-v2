@@ -1,5 +1,5 @@
 import { Typography } from "@mui/material";
-import Popup from "../../../components/Popup";
+import Popup from "../../../../components/Popup";
 
 interface DeleteFileModalScreenProps {
     open: boolean;

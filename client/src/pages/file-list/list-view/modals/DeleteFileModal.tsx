@@ -1,4 +1,4 @@
-import useFileMutation from "../../../hooks/useFileMutation";
+import useFileMutation from "../../../../hooks/useFileMutation";
 import DeleteFileModalScreen from "./DeleteFileModal.screen";
 
 interface DeleteFileModalProps {

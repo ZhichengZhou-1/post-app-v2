@@ -30,7 +30,11 @@ class Login {
             ]
         });
         console.log("authurl: ", authUrl);
-        res.redirect(authUrl);
+        try {
+            res.redirect(authUrl);
+        } catch (err) {
+            console.log("err");
+        }
     }
 
     @Get("/google/signin/callback")
@@ -39,6 +43,7 @@ class Login {
         res: Response
     ): Promise<void> {
         try {
+            console.log("here");
             const { code } = req.query;
 
             const { tokens } = await oauth2Client.getToken(code as string);

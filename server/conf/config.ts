@@ -3,8 +3,8 @@ import * as Log from "../utils/log.util";
 // class SecretsData {}
 
 class Config {
-    PORT = "9099";
-    HOST = "http://localhost:9099";
+    PORT = "9098";
+    HOST = "http://localhost:9098";
     DYNAMODB_REGION = "us-west-2";
     DYNAMODB_TABLE_NAME = "PostTable";
 }

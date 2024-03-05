@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import useFileMutation from "../../../hooks/useFileMutation";
+import useFileMutation from "../../../../hooks/useFileMutation";
 import AddFileModalScreen from "./AddFileModal.screen";
 
 interface AddFileModalProps {
@@ -22,6 +22,7 @@ const AddFileModal = (props: AddFileModalProps) => {
                 title: filepath,
                 postId: (currentLength + 1).toString(),
                 author: name,
+                authorEmail: email,
                 content: "",
                 lastModified: new Date().toISOString()
             });
